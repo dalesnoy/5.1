@@ -17,18 +17,18 @@ func Info(dataset []string, dp DataParser) {
 	}
 
 	for i, data := range dataset {
-
 		if err := dp.Parse(data); err != nil {
 			log.Printf("Ошибка парсинга (строка %d): %v\n", i+1, err)
 			continue
 		}
-		info, err := dp.ActionInfo()
 
+		info, err := dp.ActionInfo()
 		if err != nil {
 			log.Printf("Ошибка формирования информации (строка %d): %v\n", i+1, err)
 			continue
 		}
 
-		fmt.Printf("--- Результат обработки строки %d ---\n%s\n\n", i+1, info)
+		// Убираем лишнее форматирование, оставляем только info
+		fmt.Println(info)
 	}
 }

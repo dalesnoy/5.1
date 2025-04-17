@@ -32,7 +32,7 @@ func RunningSpentCalories(steps int, weight, height float64, duration time.Durat
 	if height <= 0 {
 		return 0, errors.New("height be greater than zero.")
 	}
-	if duration < 0 {
+	if duration <= 0 {
 		return 0, errors.New("duration be greater than zero.")
 	}
 	meanSpeed := MeanSpeed(steps, height, duration)

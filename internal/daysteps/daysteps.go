@@ -12,10 +12,6 @@ import (
 	"github.com/Yandex-Practicum/tracker/internal/trainings"
 )
 
-const (
-	minInH = 60
-)
-
 type DaySteps struct {
 	// TODO: добавить поля
 	Steps    int
@@ -63,28 +59,37 @@ func (ds DaySteps) ActionInfo() (string, error) {
 	if ds.Height <= 0 {
 		return "", errors.New("height must be > 0")
 	}
+	if ds.Duration <= 0 {
+		return "", errors.New("продолжительность должна быть положительной")
+	}
 
 	distance := spentenergy.Distance(ds.Steps, ds.Height)
 	var calls float64
 	var err error
-	switch ds.Training.TrainingType {
+
+	// Если тип тренировки не указан, считаем, что это ходьба (как в тестах)
+	trainingType := ds.Training.TrainingType
+	if trainingType == "" {
+		trainingType = "Ходьба"
+	}
+
+	switch trainingType {
 	case "Бег":
 		calls, err = spentenergy.RunningSpentCalories(ds.Steps, ds.Weight, ds.Height, ds.Duration)
 		if err != nil {
 			return "", fmt.Errorf("ошибка при расчёте калорий для бега: %v", err)
 		}
 	case "Ходьба":
-		var err error
 		calls, err = spentenergy.WalkingSpentCalories(ds.Steps, ds.Weight, ds.Height, ds.Duration)
 		if err != nil {
 			return "", fmt.Errorf("ошибка при расчёте калорий для ходьбы: %v", err)
 		}
 	default:
-		return "", fmt.Errorf("неизвестный тип тренировки: %s", ds.Training.TrainingType)
+		return "", fmt.Errorf("неизвестный тип тренировки: %s", trainingType)
 	}
 
 	info := fmt.Sprintf(
-		"Количество шагов: %d.\nДистанция составила %.2f км.\nВы сожгли %.2f ккал.",
+		"Количество шагов: %d.\nДистанция составила %.2f км.\nВы сожгли %.2f ккал.\n",
 		ds.Steps, distance, calls,
 	)
 

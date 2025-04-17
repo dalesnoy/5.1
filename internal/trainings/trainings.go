@@ -20,7 +20,6 @@ type Training struct {
 }
 
 func (t *Training) Parse(datastring string) (err error) {
-	// TODO: реализовать функцию
 	list := strings.Split(datastring, ",")
 	if len(list) != 3 {
 		return errors.New("incorrect number of arguments")
@@ -34,11 +33,9 @@ func (t *Training) Parse(datastring string) (err error) {
 		return errors.New("incorrect number of steps")
 	}
 	t.Steps = Steps
+
 	TrainingType := strings.TrimSpace(list[1])
-	if TrainingType != "Бег" && TrainingType != "Ходьба" {
-		return errors.New("unknown type of training")
-	}
-	t.TrainingType = TrainingType
+	t.TrainingType = TrainingType // Убрали проверку типа здесь
 
 	duration, err := time.ParseDuration(strings.TrimSpace(list[2]))
 	if err != nil {
@@ -66,7 +63,7 @@ func (t Training) ActionInfo() (string, error) {
 		calls, err = spentenergy.WalkingSpentCalories(t.Steps, t.Weight, t.Height, t.Duration)
 		activity = "Ходьба"
 	default:
-		return "", fmt.Errorf("неизвестный тип тренировки")
+		return "", fmt.Errorf("неизвестный тип тренировки %s", t.TrainingType)
 	}
 	if err != nil {
 		return "", fmt.Errorf("error counting callories")
@@ -77,7 +74,7 @@ func (t Training) ActionInfo() (string, error) {
 			"Длительность: %.2f ч.\n"+
 			"Дистанция: %.2f км.\n"+
 			"Скорость: %.2f км/ч\n"+
-			"Сожгли калорий: %.2f",
+			"Сожгли калорий: %.2f\n",
 		activity,
 		t.Duration.Hours(),
 		dist,
